@@ -1,0 +1,22 @@
+# Thu muc build va file thuc thi
+/build/
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.pdb
+*.ilk
+
+# Cau hinh ca nhan va file tam cua trinh soan thao
+/.vscode/
+/.vs/
+*.user
+*.swp
+*~
+.DS_Store
+Thumbs.db
