@@ -1,4 +1,5 @@
 #include "TroChoi.h"
+#include "BanDo.h"
 
 #include <iostream>
 #include <sstream>
@@ -88,10 +89,12 @@ void TroChoi::hienThiHuongDan() const {
 }
 
 void TroChoi::batDauTroChoi() const {
+    BanDo banDo(tenBanDo);
     std::cout << "\n===== BAT DAU TRO CHOI =====\n"
               << "Ban do da chon: " << tenBanDo << '\n'
-              << "Do kho da chon: " << doKho << '\n'
-              << "Chuc nang choi game se duoc phat trien o giai doan tiep theo.\n";
+              << "Do kho da chon: " << doKho << '\n';
+    banDo.hienThi(std::cout);
+    std::cout << "Chuc nang choi game se duoc phat trien o giai doan tiep theo.\n";
 }
 
 bool TroChoi::choQuayVeMenu() const {
