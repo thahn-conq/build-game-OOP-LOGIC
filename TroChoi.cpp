@@ -1,7 +1,9 @@
 #include "TroChoi.h"
-#include "BanDo.h"
+#include "VanChoi.h"
 
+#include <cctype>
 #include <iostream>
+#include <random>
 #include <sstream>
 
 TroChoi::TroChoi() : tenBanDo("Classic"), doKho("Normal") {
@@ -85,16 +87,89 @@ void TroChoi::hienThiHuongDan() const {
               << "An cac cham de ghi diem.\n"
               << "Tranh va cham voi Ghost.\n"
               << "An het cham de chien thang.\n"
-              << "Het mang se thua.\n";
+              << "Het mang se thua.\n"
+              << "Nhap mot lenh roi Enter, chap nhan chu hoa/thuong.\n"
+              << "Q: Thoat van hien tai, quay ve Menu.\n"
+              << "Moi cham: 10 diem. Gap tuong khong tinh luot.\n"
+              << "Easy: 5 mang/1 Ghost; Normal: 3 mang/2 Ghost; Hard: 2 mang/3 Ghost.\n";
 }
 
-void TroChoi::batDauTroChoi() const {
-    BanDo banDo(tenBanDo);
-    std::cout << "\n===== BAT DAU TRO CHOI =====\n"
+void TroChoi::hienThiVanChoi(const VanChoi& vanChoi) const {
+    std::cout << "\n===== PAC-MAN =====\n"
               << "Ban do da chon: " << tenBanDo << '\n'
-              << "Do kho da chon: " << doKho << '\n';
-    banDo.hienThi(std::cout);
-    std::cout << "Chuc nang choi game se duoc phat trien o giai doan tiep theo.\n";
+              << "Do kho da chon: " << doKho << '\n'
+              << "Diem: " << vanChoi.layDiemSo()
+              << " | Mang: " << vanChoi.laySoMang()
+              << " | Cham con lai: " << vanChoi.laySoCham()
+              << " | Luot: " << vanChoi.laySoLuot() << '\n';
+    for (int hang = 0; hang < vanChoi.layBanDo().laySoHang(); ++hang) {
+        for (int cot = 0; cot < vanChoi.layBanDo().laySoCot(); ++cot) {
+            std::cout << vanChoi.layKyTuHienThi(hang, cot);
+        }
+        std::cout << '\n';
+    }
+}
+
+bool TroChoi::nhapLenh(char& lenh) const {
+    std::string dongNhap;
+    while (true) {
+        std::cout << "Nhap W/A/S/D de di chuyen, Q de ve Menu: ";
+        if (!std::getline(std::cin, dongNhap)) {
+            return false;
+        }
+        std::istringstream luongNhap(dongNhap);
+        char kyTu;
+        char kyTuThua;
+        if ((luongNhap >> kyTu) && !(luongNhap >> kyTuThua)) {
+            kyTu = static_cast<char>(std::tolower(static_cast<unsigned char>(kyTu)));
+            if (kyTu == 'w' || kyTu == 'a' || kyTu == 's' || kyTu == 'd' || kyTu == 'q') {
+                lenh = kyTu;
+                return true;
+            }
+        }
+        std::cout << "Lenh khong hop le. Vui long nhap lai.\n";
+    }
+}
+
+bool TroChoi::batDauTroChoi() const {
+    std::random_device taoHatGiong;
+    VanChoi vanChoi(BanDo(tenBanDo), doKho, taoHatGiong());
+    while (true) {
+        while (vanChoi.layTrangThai() == TrangThaiVan::DANG_CHOI) {
+            hienThiVanChoi(vanChoi);
+            char lenh;
+            if (!nhapLenh(lenh)) {
+                return false;
+            }
+            if (lenh == 'q') {
+                std::cout << "Da thoat van choi.\n";
+                return true;
+            }
+            int soMangCu = vanChoi.laySoMang();
+            if (!vanChoi.xuLyLuot(lenh)) {
+                std::cout << "Gap tuong, khong the di chuyen.\n";
+            } else if (vanChoi.laySoMang() < soMangCu) {
+                std::cout << "Va cham Ghost! Mat mot mang.\n";
+            }
+        }
+        hienThiVanChoi(vanChoi);
+        if (vanChoi.layTrangThai() == TrangThaiVan::CHIEN_THANG) {
+            std::cout << "Chien thang! Da an het cham.\n";
+        } else {
+            std::cout << "Game Over! Da het mang.\n";
+        }
+        std::cout << "Diem cuoi cung: " << vanChoi.layDiemSo()
+                  << " | So luot da thuc hien: " << vanChoi.laySoLuot()
+                  << "\n1. Choi lai\n2. Quay ve Menu\n";
+        int luaChon;
+        if (!nhapLuaChon(1, 2, luaChon)) {
+            return false;
+        }
+        if (luaChon == 2) {
+            return true;
+        }
+        vanChoi.khoiDongLai();
+    }
 }
 
 bool TroChoi::choQuayVeMenu() const {
@@ -115,8 +190,7 @@ void TroChoi::chay() {
 
         switch (luaChon) {
             case 1:
-                batDauTroChoi();
-                dangChay = choQuayVeMenu();
+                dangChay = batDauTroChoi();
                 break;
             case 2:
                 dangChay = chonBanDo();

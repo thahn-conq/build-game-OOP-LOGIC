@@ -18,10 +18,14 @@ private:
 
 public:
     explicit BanDo(const std::string& tenBanDo = "Classic");
+    explicit BanDo(const std::vector<std::string>& duLieu);
 
     int laySoHang() const;
     int laySoCot() const;
     char layKyTu(int hang, int cot) const;
+    char layKyTuNen(int hang, int cot) const;
+    bool anThucAn(int hang, int cot);
+    int demThucAn() const;
     bool toaDoHopLe(int hang, int cot) const;
     bool laTuong(int hang, int cot) const;
     std::pair<int, int> layViTriPacMan() const;

@@ -3,6 +3,8 @@
 
 #include <string>
 
+class VanChoi;
+
 class TroChoi {
 private:
     std::string tenBanDo;
@@ -13,7 +15,9 @@ private:
     bool chonBanDo();
     bool chonDoKho();
     void hienThiHuongDan() const;
-    void batDauTroChoi() const;
+    bool batDauTroChoi() const;
+    void hienThiVanChoi(const VanChoi& vanChoi) const;
+    bool nhapLenh(char& lenh) const;
     bool choQuayVeMenu() const;
 
 public:

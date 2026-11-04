@@ -54,12 +54,16 @@ BanDo::BanDo(const std::string& tenBanDo) : luoi(0, 0, ' ') {
     napDuLieu(duLieu);
 }
 
+BanDo::BanDo(const std::vector<std::string>& duLieu) : luoi(0, 0, ' ') {
+    napDuLieu(duLieu);
+}
+
 void BanDo::napDuLieu(const std::vector<std::string>& duLieu) {
-    const int SO_HANG = 11;
-    const int SO_COT = 21;
-    if (static_cast<int>(duLieu.size()) != SO_HANG) {
-        throw std::invalid_argument("Ban do sai so hang.");
+    if (duLieu.size() < 3 || duLieu.front().size() < 3) {
+        throw std::invalid_argument("Ban do qua nho.");
     }
+    const int SO_HANG = static_cast<int>(duLieu.size());
+    const int SO_COT = static_cast<int>(duLieu.front().size());
 
     luoi = Luoi<char>(SO_HANG, SO_COT, ' ');
     int soPacMan = 0;
@@ -109,6 +113,32 @@ int BanDo::laySoCot() const {
 
 char BanDo::layKyTu(int hang, int cot) const {
     return luoi.layGiaTri(hang, cot);
+}
+
+char BanDo::layKyTuNen(int hang, int cot) const {
+    char kyTu = layKyTu(hang, cot);
+    // P/G trong du lieu goc chi danh dau vi tri xuat phat.
+    return kyTu == 'P' || kyTu == 'G' ? ' ' : kyTu;
+}
+
+bool BanDo::anThucAn(int hang, int cot) {
+    if (layKyTu(hang, cot) != '.') {
+        return false;
+    }
+    luoi.capNhatGiaTri(hang, cot, ' ');
+    return true;
+}
+
+int BanDo::demThucAn() const {
+    int soThucAn = 0;
+    for (int hang = 0; hang < laySoHang(); ++hang) {
+        for (int cot = 0; cot < laySoCot(); ++cot) {
+            if (layKyTu(hang, cot) == '.') {
+                ++soThucAn;
+            }
+        }
+    }
+    return soThucAn;
 }
 
 bool BanDo::toaDoHopLe(int hang, int cot) const {
